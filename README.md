@@ -16,12 +16,8 @@
 - [Demo](#demo)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Dataset](#dataset)
 - [Model](#model)
-- [Results](#results)
-- [Contributing](#contributing)
-- [Citation](#citation)
 
 ---
 
