@@ -2,7 +2,7 @@
 ============================================================
   ArgueBot — Unified Gradio UI
   24-class RoBERTa (11 schemes + 13 fallacies)
-  + Qwen explanation via Groq (free)
+  + Llama explanation via Groq (free)
   + Single text tab  +  Debate Analyser tab
 ============================================================
 
@@ -13,18 +13,9 @@ Setup:
   4. Run Cell 2 to launch
 
 Model folder required: ./roberta_unified_model/
-  (saved by unified_classifier_training.py Step 11)
+  (saved by roberta_classifier_training.py )
 """
 
-# ============================================================
-# CELL 1 — Install (run once)
-# ============================================================
-# !pip install gradio transformers torch groq
-
-
-# ============================================================
-# CELL 2 — Full app
-# ============================================================
 
 import json, re, warnings
 warnings.filterwarnings("ignore")
@@ -172,7 +163,7 @@ def run_inference(text: str) -> dict:
 
 def stream_explanation(text: str, verdict: str, label: str,
                        confidence: float, top5: list):
-    """Stream Qwen explanation via Groq."""
+    """Stream Llama explanation via Groq."""
     top3_str = ", ".join(f"{l} ({p:.0%})" for l, p in top5[1:4])
 
     if verdict == "Valid Argument":
@@ -226,9 +217,6 @@ Be direct and clear. Do not repeat the full argument verbatim."""
         yield f"⚠️ Could not generate explanation: {e}"
 
 
-# ============================================================
-# Tab 1: Single text classifier
-# ============================================================
 
 def classify_single(text: str):
     """Full pipeline for single text tab — yields for streaming."""
@@ -267,16 +255,13 @@ def classify_single(text: str):
 
     # Show classification immediately
     yield (result_md, all_scores, conf_str, chars_str,
-           "⏳ *Generating Qwen explanation...*")
+           "⏳ *Generating Llama explanation...*")
 
     # Stream explanation
     for chunk in stream_explanation(text, verdict, label, conf, top5):
         yield (result_md, all_scores, conf_str, chars_str, chunk)
 
 
-# ============================================================
-# Tab 2: Debate Analyser (batch)
-# ============================================================
 
 def split_sentences(text: str) -> list[str]:
     raw = re.split(r'(?<=[.!?])\s+', text.strip())
@@ -289,7 +274,7 @@ def build_table_html(rows: list[dict]) -> str:
     n_scheme  = sum(1 for r in rows if r["is_scheme"])
     n_fallacy = total - n_scheme
 
-    # Summary cards
+    
     html = f"""
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem;">
   <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center;">
@@ -385,9 +370,6 @@ def analyse_debate(text: str):
     yield build_table_html(rows)
 
 
-# ============================================================
-# Gradio UI
-# ============================================================
 
 SINGLE_EXAMPLES = [
     ["According to leading climate scientists at NASA, global temperatures will rise by 2°C by 2050."],

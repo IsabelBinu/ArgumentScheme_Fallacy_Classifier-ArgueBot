@@ -38,9 +38,8 @@ if torch.cuda.is_available():
     print(f"   GPU : {torch.cuda.get_device_name(0)}")
 
 
-# ============================================================
 # STEP 2: Define Known Label Sets
-# ============================================================
+
 SCHEME_LABELS = {
     "argument from example",
     "argument from values",
@@ -71,10 +70,8 @@ FALLACY_LABELS = {
     "equivocation",
 }  # 13 fallacy labels
 
-
-# ============================================================
 # STEP 3: Load Combined Dataset
-# ============================================================
+
 DATASET_PATH = "ArgumentLabelDataset.csv"
 
 print(f"\n📥 Loading: '{DATASET_PATH}'")
@@ -85,9 +82,9 @@ print(f"\n🔍 First 3 rows:")
 print(df_raw.head(3).to_string())
 
 
-# ============================================================
+
 # STEP 4: Preprocess
-# ============================================================
+
 TEXT_COL  = "Argument"
 LABEL_COL = "Label"
 
@@ -116,9 +113,8 @@ print(f"   Scheme rows  : {len(df[df['type']=='scheme'])}")
 print(f"   Fallacy rows : {len(df[df['type']=='fallacy'])}")
 
 
-# ============================================================
 # STEP 4.5: Deduplicate & Shuffle
-# ============================================================
+
 print("\n🔍 Deduplication & Shuffling...")
 before = len(df)
 
@@ -163,9 +159,9 @@ else:
     print(f"✅ All {len(found_labels)} expected labels still present after cleaning")
 
 
-# ============================================================
+
 # STEP 5: Explore Unified Label Distribution
-# ============================================================
+
 print("\n📊 Full label distribution:")
 counts = df["label"].value_counts()
 print(counts.to_string())
@@ -194,13 +190,10 @@ plt.show()
 print("💾 Saved: unified_label_distribution.png")
 
 
-# ============================================================
-# STEP 6: Encode Labels & Split
-# ============================================================
-print("\n🔧 Encoding labels...")
 
-# Only include labels actually present after cleaning
-# [Fix 4 cont.] found_labels is now computed post-cleaning above
+# STEP 6: Encode Labels & Split
+
+print("\n🔧 Encoding labels...")
 ordered_labels = sorted(SCHEME_LABELS) + sorted(FALLACY_LABELS)
 ordered_labels = [l for l in ordered_labels if l in found_labels]
 
@@ -231,9 +224,9 @@ print(f"   Val   : {len(val_df)}")
 print(f"   Test  : {len(test_df)}")
 
 
-# ============================================================
+
 # STEP 7: Class Weights
-# ============================================================
+
 
 print("\n⚖️  Computing class weights...")
 class_weights = compute_class_weight(
@@ -245,9 +238,9 @@ class_weights_tensor = torch.tensor(class_weights, dtype=torch.float).to(device)
 print(f"✅ Weights  min={class_weights.min():.3f}  max={class_weights.max():.3f}")
 
 
-# ============================================================
+
 # STEP 8: Tokenize & DataLoaders
-# ============================================================
+
 MODEL_NAME = "roberta-large"
 MAX_LEN    = 128
 BATCH_SIZE = 8
@@ -296,9 +289,9 @@ print(f"   Val   batches : {len(val_loader)}")
 print(f"   Test  batches : {len(test_loader)}")
 
 
-# ============================================================
+
 # STEP 9: Fine-tune RoBERTa
-# ============================================================
+
 EPOCHS        = 20
 LEARNING_RATE = 2e-5     
 WARMUP_RATIO  = 0.1
@@ -516,10 +509,8 @@ print(
     f"   Best {MONITOR:<10}: {early_stopping.best_score:.4f}"
 )
 
-
-# ============================================================
 # STEP 10: Evaluate on Test Set
-# ============================================================
+
 print("\n🧪 Loading best model and evaluating on test set...")
 model.load_state_dict(torch.load(best_model_path, map_location=device))
 test_loss, test_f1, test_acc, test_preds, test_labels_list = evaluate(model, test_loader)
@@ -595,9 +586,9 @@ plt.show()
 print(f"💾 Saved  —  trained for {actual_epochs} epochs")
 
 
-# ============================================================
+
 # STEP 11: Save Model for Deployment
-# ============================================================
+
 print("\n💾 Saving model & tokenizer...")
 
 SAVE_DIR = "./roberta_unified_model"
@@ -621,9 +612,9 @@ print(f"✅ Saved to '{SAVE_DIR}/'")
 print(f"   Files: config.json, model.safetensors, tokenizer files, metadata.json")
 
 
-# ============================================================
+
 # STEP 12: Live Inference Test
-# ============================================================
+
 print("\n🔍 Live inference — one sample per category:")
 
 with open(f"{SAVE_DIR}/metadata.json") as f:
