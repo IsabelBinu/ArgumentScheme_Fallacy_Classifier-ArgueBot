@@ -129,7 +129,7 @@ FALLACY_INFO = {
 
 
 def run_inference(text: str) -> dict:
-    """Run unified ModernBERT classifier on a single text."""
+    """Run unified roberta classifier on a single text."""
     enc = tokenizer(
         text,
         max_length=MAX_LEN,
