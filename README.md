@@ -74,7 +74,7 @@ arguebot/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/arguebot.git
+git clone git@github.com:isabelmaria123/ArgumentScheme-Fallacy-Classifier---ArgueBot.git
 cd arguebot
 ```
 
@@ -92,19 +92,6 @@ venv\Scripts\activate           # Windows
 pip install -r requirements.txt
 ```
 
-**requirements.txt:**
-```
-torch>=2.0.0
-transformers>=4.40.0
-gradio>=4.0.0
-groq>=0.9.0
-scikit-learn>=1.3.0
-pandas>=2.0.0
-numpy>=1.24.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-accelerate>=0.25.0
-```
 
 ---
 
@@ -114,7 +101,7 @@ accelerate>=0.25.0
 
 ```bash
 
-python unified_classifier_training.py
+python roberta_classifier_training.py
 ```
 
 The trained model is saved to `./roberta_unified_model/`.
@@ -166,11 +153,11 @@ def predict(text):
         "confidence": f"{probs[pred_id]:.1%}",
     }
 
-print(predict("According to NASA, global temperatures will rise 2°C by 2050."))
-# {'verdict': '✅ Valid Argument', 'label': 'argument from expert opinion', 'confidence': '91.4%'}
+print(predict("Introducing a four-day work week will boost employee wellbeing, reduce burnout, and ultimately increase overall productivity."))
 
-print(predict("Don't trust him — he was caught lying before."))
-# {'verdict': '⚡ Fallacy', 'label': 'ad hominem', 'confidence': '88.3%'}
+
+print(predict("Don't trust him — he was caught lying before, so everything he says is wrong."))
+
 ```
 
 ---
@@ -181,8 +168,8 @@ The model was trained on a **combined dataset** of 24 classes:
 
 | Source | Type | Classes | Samples |
 |---|---|---|---|
-| EthiX + Macagno | Argument schemes | 11 | — |
-| Custom fallacy dataset | Fallacy types | 13 | — |
+| EthiX + Macagno | Argument schemes | 11 | 1829 |
+| Custom fallacy dataset | Fallacy types | 13 | 4124 |
 
 **Combined CSV format:**
 | Column | Description |
@@ -205,16 +192,14 @@ The model was trained on a **combined dataset** of 24 classes:
 | Base model | `roberta-large` |
 | Task | 24-class text classification |
 | Max token length | 128 |
-| Optimiser | AdamW (lr=1e-5, weight_decay=0.01) |
+| Optimiser | AdamW (lr=2e-5, weight_decay=0.01) |
 | Loss | Weighted CrossEntropyLoss (handles class imbalance) |
 | Early stopping | Patience=3, monitor=val_loss |
 | Training split | 70 / 15 / 15 (train / val / test) |
 
 **Training features:**
 - Stratified train/val/test split
-- Exact and near-duplicate removal
 - Class weight balancing across 24 labels
-- Linear warmup scheduler (15% of steps)
 - Gradient clipping (max_norm=1.0)
 - Early stopping on validation loss
 
