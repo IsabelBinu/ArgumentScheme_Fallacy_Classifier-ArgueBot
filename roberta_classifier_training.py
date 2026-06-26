@@ -242,7 +242,7 @@ print(f"✅ Weights  min={class_weights.min():.3f}  max={class_weights.max():.3f
 # STEP 8: Tokenize & DataLoaders
 
 MODEL_NAME = "roberta-large"
-MAX_LEN    = 128
+MAX_LEN    = 512
 BATCH_SIZE = 8
 
 print(f"\n🤖 Loading tokenizer: {MODEL_NAME}")

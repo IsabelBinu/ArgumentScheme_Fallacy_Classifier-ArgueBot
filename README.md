@@ -187,7 +187,7 @@ The model was trained on a **combined dataset** of 24 classes:
 |---|---|
 | Base model | `roberta-large` |
 | Task | 24-class text classification |
-| Max token length | 128 |
+| Max token length | 512 |
 | Optimiser | AdamW (lr=2e-5, weight_decay=0.01) |
 | Loss | Weighted CrossEntropyLoss (handles class imbalance) |
 | Early stopping | Patience=3, monitor=val_loss |
